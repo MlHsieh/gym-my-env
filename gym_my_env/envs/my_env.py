@@ -34,15 +34,9 @@ class CartPoleEnv(gym.Env):
         3     Pole Velocity At Tip      -Inf            Inf
 
     Actions:
-        Type: Discrete(2)
-        Num   Action
-        0     Push cart to the left
-        1     Push cart to the right
-
-        Note: The amount the velocity that is reduced or increased is not
-        fixed; it depends on the angle the pole is pointing. This is because
-        the center of gravity of the pole increases the amount of energy needed
-        to move the cart underneath it
+        Type: Box(1)
+        Num   Action                    Min             Max
+        0     Input force               -1              1
 
     Reward:
         Reward is 1 for every step taken, including the termination step
@@ -88,7 +82,7 @@ class CartPoleEnv(gym.Env):
                          np.finfo(np.float32).max],
                         dtype=np.float32)
 
-        self.action_space = spaces.Discrete(2)
+        self.action_space = spaces.Box(-1, 1, shape=(1,), dtype=np.float32)
         self.observation_space = spaces.Box(-high, high, dtype=np.float32)
 
         self.seed()
@@ -106,7 +100,7 @@ class CartPoleEnv(gym.Env):
         assert self.action_space.contains(action), err_msg
 
         x, x_dot, theta, theta_dot = self.state
-        force = self.force_mag if action == 1 else -self.force_mag
+        force = self.force_mag * action
         costheta = math.cos(theta)
         sintheta = math.sin(theta)
 
